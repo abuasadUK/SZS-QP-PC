@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://api.qrserver.com https://fonts.googleapis.com https://fonts.gstatic.com data: blob:; img-src 'self' https://api.qrserver.com data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self';">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sort Zone Solution</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="mini-rail">
+    <button id="toggleSidebar" class="rail-btn" title="Menu">☰</button>
+    <button id="railLabels" class="rail-btn rail-home" title="Labels">⌂</button>
+    <button id="railQuick" class="rail-btn rail-qp" title="Quick Print"><img src="qp-logo.png" alt="QP"></button>
+    <button id="railSetup" class="rail-btn" title="Setup">⚙</button>
+    <button id="railKeyboard" class="rail-btn rail-keyboard" title="On-screen keyboard"><img src="keyboard-icon.png" alt="Keyboard"></button>
+  </div>
+
+  <div id="sidebarShade" class="sidebar-shade hidden"></div>
+
+  <div class="app-shell">
+    <aside id="sidebar" class="sidebar">
+      <div class="brand">
+        <div class="brand-title">Sort Zone</div>
+        <div class="brand-subtitle">Desktop Solution v1.9</div>
+      </div>
+      <button class="nav-btn" data-page="labelsPage">Labels</button>
+      <button class="nav-btn active" data-page="quickPrintPage">Quick Print</button>
+      <button class="nav-btn" data-page="settingsPage">Setup</button>
+      <div class="side-footer">
+        <div>By Imran Ali Soomro</div>
+        <div class="muted">imrsooms</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="labelsPage" class="page">
+        <header class="top-header labels-header">
+          <div>
+            <h1>Sort Zone Solution</h1>
+            <p>Generate and print Sort Zone, OV, PS, STG and ENDCP labels.</p>
+          </div>
+          <div class="station-pill">
+            Station: <input id="stationCode" placeholder="DCE1" maxlength="12" />
+          </div>
+        </header>
+
+        <div class="top-actions">
+          <button id="generateSortZones" class="primary">Generate Bag Sort Zones</button>
+          <button id="printSortZones">Print Bag Sort Zones</button>
+          <button id="generateOv" class="purple">Generate OV / PS / STG</button>
+          <button id="printOv" class="pink">Print OV / PS / STG</button>
+          <button id="clearAll" class="danger">Clear All</button>
+          <label class="file-btn">
+            Import STEM Data
+            <input id="stemFile" type="file" accept=".csv,.txt,.json" />
+          </label>
+        </div>
+
+        <div class="grid">
+          <section class="card left-card">
+            <div class="card-header">
+              <h2>Enter Sort Zones</h2>
+              <button id="pasteMultiple">Paste Multiple</button>
+            </div>
+            <div id="sortZoneInputs" class="input-list"></div>
+            <button id="addRow" class="wide">Add Row</button>
+          </section>
+
+          <section class="card preview-card">
+            <div class="card-header split">
+              <h2>Label Preview</h2>
+              <div class="endcp-controls">
+                <select id="endcpDropdown"><option value="">ENDCP labels</option></select>
+                <input id="endcpRange" placeholder="A1,A24 or A1-A24" />
+                <button id="selectEndcp">Search / Select</button>
+              </div>
+            </div>
+            <div id="labelPreview" class="label-preview"></div>
+          </section>
+
+          <section class="card ov-card">
+            <h2>OV / PS / STG / ENDCP</h2>
+            <input id="ovEntry" class="ov-input" placeholder="A1-X / PS-A1 / STG-A1 / ENDCP.C25" />
+            <div class="ov-preview">
+              <div id="ovDisplay" class="ov-title">LOCATION ID</div>
+              <img id="ovQr" alt="" />
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="quickPrintPage" class="page active">
+        <div id="quickStage" class="quick-stage"></div>
+      </section>
+
+      <section id="settingsPage" class="page">
+        <div class="settings-grid">
+          <section class="card settings-printers">
+            <h2>Printer Names</h2>
+            <label>Default printer for Sort Zone labels</label>
+            <select id="szPrinter"></select>
+            <label>Default printer for OV labels</label>
+            <select id="ovPrinter"></select>
+            <p class="settings-help">Printers are loaded from Windows. Printing uses the selected printer instantly.</p>
+          </section>
+
+          <section class="card settings-format">
+            <h2>Station Format</h2>
+            <label>Label format</label>
+            <select id="labelFormat">
+              <option value="A9-1A">A9-1A</option>
+              <option value="A-9.1A">A-9.1A</option>
+            </select>
+          </section>
+
+          <section class="card clusters-card">
+            <h2>Clusters</h2>
+            <div id="clusterSettings" class="cluster-settings"></div>
+          </section>
+
+          <section class="card cluster-ranges-card">
+            <h2>Cluster Aisles</h2>
+            <div id="clusterRanges" class="cluster-ranges"></div>
+          </section>
+
+          <section class="card cluster-zones-card">
+            <h2>Cluster Bag Locations</h2>
+            <p class="settings-help">Choose which bag sort-zone letters show in Quick Print for each cluster.</p>
+            <div id="clusterZoneMatrix" class="cluster-zone-matrix"></div>
+          </section>
+        </div>
+
+        <button id="saveSettings" class="primary save-btn">Save Settings</button>
+      </section>
+    </main>
+  </div>
+
+  <div id="quickPopup" class="popup hidden">
+    <div class="popup-card">
+      <div id="popupCaption" class="popup-caption">Tap on label to print</div>
+      <div id="popupLabel" class="popup-label"></div>
+      <div id="popupPrinter" class="muted"></div>
+      <button id="popupCancel" class="danger">Cancel</button>
+    </div>
+  </div>
+
+  <div id="printSentToast" class="print-toast hidden">
+    <div class="print-toast-card">
+      <img src="print-sent.gif" alt="Print sent" />
+      <div id="printToastText">Label sent to printer</div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
